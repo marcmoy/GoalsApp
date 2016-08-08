@@ -1,1 +1,10 @@
-<h1>Goals index</h1>
+<h1>Goals Index Page</h1>
+
+<ul>
+<% @goals.each do |goal| %>
+  <% next if goal.private %>
+  <li>
+    <%= goal.title %> by <%= goal.author.username %> | <i><%= goal.status %></i>
+  </li>
+<% end %>
+</ul>

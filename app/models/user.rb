@@ -11,18 +11,21 @@
 #
 
 class User < ActiveRecord::Base
+  after_initialize :ensure_session_token
   validates :username, :password_digest, :session_token, presence: true
   validates :username, uniqueness: true
   validates :password, length: { minimum: 6, allow_nil: true }
   attr_reader :password
 
-  after_initialize :ensure_session_token
+  has_many :goals,
+    primary_key: :id,
+    foreign_key: :author_id,
+    class_name: :Goal
 
   def self.find_by_credentials(username, password)
     user = User.find_by_username(username)
     return nil unless user && user.is_password?(password)
     user
-
   end
 
   def is_password?(password)
@@ -41,7 +44,6 @@ class User < ActiveRecord::Base
   def reset_session_token!
     self.session_token = SecureRandom::urlsafe_base64(16)
     self.save!
+    self.session_token
   end
-
-
 end
